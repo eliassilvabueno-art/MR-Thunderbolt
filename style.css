@@ -1,0 +1,610 @@
+/* --- PALETA DE CORES E CAMUFLAGEM MILITAR --- */
+:root {
+  --camo-dark: #121810;
+  --camo-green: #293522;
+  --camo-brown: #3b3226;
+  --camo-khaki: #4d4637;
+  --panel-bg: #182017;
+  --border-green: #3f5234;
+  --thunderbolt-gold: #d6c596;
+  --hud-neon: #44ff22;
+  --hud-amber: #ffaa00;
+  --hud-red: #ff3333;
+  --text-light: #e2ebd9;
+  --text-muted: #8fa382;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  cursor: none !important; /* Desativa o cursor do sistema para usar a mira de tanque */
+}
+
+/* ESTAMPA CAMUFLAGEM MILITAR DINÂMICA */
+body {
+  background-color: var(--camo-dark);
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(41, 53, 34, 0.75) 0%, transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(59, 50, 38, 0.65) 0%, transparent 45%),
+    radial-gradient(circle at 40% 70%, rgba(77, 70, 55, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(35, 48, 28, 0.85) 0%, transparent 40%),
+    linear-gradient(rgba(18, 24, 16, 0.88), rgba(18, 24, 16, 0.88));
+  background-attachment: fixed;
+  color: var(--text-light);
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* --- CURSOR DE MIRA DE TANQUE MODERNO (FCS RETICLE) --- */
+#tank-reticle {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: width 0.15s, height 0.15s, border-color 0.15s;
+}
+
+.reticle-outer-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px dashed var(--hud-neon);
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: girarLento 20s linear infinite;
+}
+
+.reticle-inner-ring {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--hud-neon);
+  border-radius: 50%;
+}
+
+.stadia-lines-h {
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 80px;
+  height: 1px;
+  background: var(--hud-neon);
+  transform: translateY(-50%);
+  opacity: 0.7;
+}
+
+.stadia-lines-v {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 1px;
+  height: 80px;
+  background: var(--hud-neon);
+  transform: translateX(-50%);
+  opacity: 0.7;
+}
+
+.rangefinder-text {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: var(--hud-neon);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 1px 4px;
+  border: 1px solid var(--border-green);
+  white-space: nowrap;
+}
+
+#reticle-dot {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  background-color: var(--hud-amber);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  box-shadow: 0 0 8px var(--hud-amber);
+}
+
+.reticle-lock {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+.reticle-lock .reticle-outer-ring {
+  border: 2px solid var(--hud-red) !important;
+  box-shadow: 0 0 15px var(--hud-red);
+}
+
+.reticle-lock .rangefinder-text {
+  color: var(--hud-red) !important;
+  border-color: var(--hud-red) !important;
+}
+
+/* --- EFEITOS DE TELA (SCANLINE E RADAR) --- */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(68, 255, 34, 0.4), transparent);
+  opacity: 0.6;
+  z-index: 1000;
+  pointer-events: none;
+  animation: varreduraVertical 7s ease-in-out infinite;
+}
+
+.radar-sweep {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 100px;
+  height: 100px;
+  border: 1px solid var(--border-green);
+  border-radius: 50%;
+  background: rgba(20, 30, 18, 0.7);
+  pointer-events: none;
+  z-index: 900;
+}
+
+.radar-sweep::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 2px;
+  background: var(--hud-neon);
+  transform-origin: 0% 0%;
+  animation: radarGiro 3s linear infinite;
+}
+
+/* --- CABEÇALHO --- */
+.header-thunderbolt {
+  background: linear-gradient(180deg, #1c2619 0%, #121810 100%);
+  border-bottom: 3px solid var(--border-green);
+  padding: 3.5rem 1rem;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
+}
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(25, 38, 22, 0.9);
+  border: 1px solid var(--hud-neon);
+  color: var(--hud-neon);
+  font-size: 0.75rem;
+  font-weight: bold;
+  font-family: monospace;
+  padding: 0.4rem 1.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.led-status {
+  width: 8px;
+  height: 8px;
+  background-color: var(--hud-neon);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--hud-neon);
+  animation: piscarLed 1.2s infinite alternate;
+}
+
+.header-container h1 {
+  color: var(--thunderbolt-gold);
+  font-size: 3.2rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(214, 197, 150, 0.25);
+}
+
+.subtitulo {
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  margin-top: 6px;
+}
+
+/* --- PAINEL E CONTEÚDO PRINCIPAL --- */
+.container-principal {
+  max-width: 960px;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+
+.post-militar {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-green);
+  border-left: 6px solid var(--thunderbolt-gold);
+  padding: 2.5rem;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+  animation: surgirGradual 0.8s ease-out forwards;
+}
+
+.hud-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.tag-categoria {
+  background-color: var(--camo-green);
+  color: var(--thunderbolt-gold);
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--border-green);
+  letter-spacing: 1.5px;
+}
+
+.coordenadas {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--hud-neon);
+}
+
+.post-header h2 {
+  color: #ffffff;
+  font-size: 2.1rem;
+  line-height: 1.3;
+  margin-bottom: 0.8rem;
+}
+
+.meta-dados {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  border-bottom: 1px dashed var(--border-green);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* --- IMAGENS TÁTICAS --- */
+.painel-imagem {
+  margin: 2rem 0;
+  border: 1px solid var(--border-green);
+  padding: 6px;
+  background-color: #0d120c;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.painel-imagem:hover {
+  border-color: var(--hud-neon);
+  transform: scale(1.01);
+}
+
+.painel-imagem img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: sepia(0.1) contrast(1.1);
+}
+
+.legenda-hud {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-family: monospace;
+}
+
+.grid-galeria {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 2rem 0;
+}
+
+.card-imagem {
+  border: 1px solid var(--border-green);
+  padding: 6px;
+  background-color: #0d120c;
+  transition: border-color 0.3s ease;
+}
+
+.card-imagem:hover {
+  border-color: var(--thunderbolt-gold);
+}
+
+.card-imagem img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card-imagem span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-family: monospace;
+}
+
+/* --- ELEMENTOS DE TEXTO & LISTAS --- */
+.introducao {
+  font-size: 1.15rem;
+  color: #f3f8ee;
+  font-weight: 500;
+  border-left: 3px solid var(--hud-neon);
+  padding-left: 1rem;
+  margin-bottom: 2rem;
+}
+
+.post-conteudo p {
+  margin-bottom: 1.4rem;
+  color: var(--text-light);
+  font-size: 1.05rem;
+}
+
+.post-conteudo h3 {
+  color: var(--thunderbolt-gold);
+  font-size: 1.35rem;
+  margin: 2.2rem 0 0.8rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.post-conteudo h3::before {
+  content: '▶';
+  font-size: 0.75rem;
+  color: var(--hud-neon);
+  margin-right: 10px;
+}
+
+.lista-tatica, .lista-ordenada-tatica {
+  margin: 1rem 0 1.8rem 1.8rem;
+  color: var(--text-light);
+}
+
+.lista-tatica li, .lista-ordenada-tatica li {
+  margin-bottom: 0.6rem;
+}
+
+.citacao-thunderbolt {
+  background: linear-gradient(90deg, #222d1e 0%, rgba(34, 45, 30, 0.2) 100%);
+  border-left: 4px solid var(--hud-neon);
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  font-style: italic;
+  color: #e5efe0;
+  font-size: 1.1rem;
+}
+
+/* --- TABELAS TÁTICAS --- */
+.tabela-container {
+  overflow-x: auto;
+  margin: 2rem 0;
+  border: 1px solid var(--border-green);
+}
+
+.tabela-tatica {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgba(18, 24, 16, 0.95);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.tabela-tatica th {
+  background-color: var(--camo-green);
+  color: var(--thunderbolt-gold);
+  padding: 0.8rem;
+  border-bottom: 2px solid var(--border-green);
+  font-family: monospace;
+}
+
+.tabela-tatica td {
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border-green);
+  color: var(--text-light);
+}
+
+.tabela-tatica tr:hover {
+  background-color: rgba(68, 255, 34, 0.05);
+}
+
+/* --- LINHA DO TEMPO HISTÓRICA --- */
+.timeline-container {
+  margin: 2rem 0;
+  border-left: 2px solid var(--border-green);
+  padding-left: 1.5rem;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.8rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.95rem;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--hud-neon);
+  box-shadow: 0 0 8px var(--hud-neon);
+}
+
+.timeline-date {
+  font-family: monospace;
+  font-weight: bold;
+  color: var(--thunderbolt-gold);
+  font-size: 0.9rem;
+}
+
+.timeline-content h4 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin: 0.2rem 0;
+}
+
+.timeline-content p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+/* --- MÓDULOS DE CONSOLE INTERATIVO --- */
+.secao-modulo-hud {
+  margin-top: 3rem;
+}
+
+.hud-box-tecnico {
+  background-color: #0b0f0a;
+  border: 1px solid var(--border-green);
+  padding: 1.5rem;
+  border-radius: 2px;
+}
+
+.hud-box-tecnico h3 {
+  color: var(--hud-neon);
+  font-family: monospace;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.console-log {
+  background-color: #050805;
+  border: 1px solid #1c2918;
+  padding: 1rem;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--hud-neon);
+  height: 100px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.btn-scan-militar {
+  background-color: var(--camo-green);
+  color: var(--hud-neon);
+  border: 1px solid var(--hud-neon);
+  padding: 0.6rem 1.2rem;
+  font-family: monospace;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.btn-scan-militar:hover {
+  background-color: var(--hud-neon);
+  color: #000;
+  box-shadow: 0 0 12px var(--hud-neon);
+}
+
+/* --- BOTÃO DE SUPORTE / LIKES --- */
+.secao-likes {
+  margin-top: 3rem;
+}
+
+.hud-box {
+  background-color: rgba(18, 24, 16, 0.9);
+  border: 1px solid var(--border-green);
+  border-top: 2px solid var(--thunderbolt-gold);
+  padding: 2rem;
+  text-align: center;
+}
+
+.titulo-like {
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+  color: var(--thunderbolt-gold);
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.subtitulo-like {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 1.5rem 0;
+}
+
+.btn-thunderbolt {
+  background-color: var(--camo-green);
+  color: var(--thunderbolt-gold);
+  border: 2px solid var(--border-green);
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+}
+
+.btn-thunderbolt:hover {
+  background-color: var(--camo-brown);
+  color: #ffffff;
+  border-color: var(--hud-neon);
+  box-shadow: 0 0 20px rgba(68, 255, 34, 0.4);
+  transform: translateY(-2px);
+}
+
+.animacao-disparo {
+  animation: pulsoLock 0.35s ease;
+}
+
+/* --- RODAPÉ --- */
+.footer-thunderbolt {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: monospace;
+  border-top: 1px solid var(--border-green);
+}
+
+/* --- KEYFRAMES DE ANIMAÇÃO --- */
+@keyframes surgirGradual {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes girarLento {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes radarGiro {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes piscarLed {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+@keyframes varreduraVertical {
+  0% { top: 0; opacity: 0.8; }
+  50% { opacity: 0.2; }
+  100% { top: 98%; opacity: 0.8; }
+}
+
+@keyframes pulsoLock {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); border-color: var(--hud-red); background-color: #4a2020; }
+  100% { transform: scale(1); }
+}
+
+/* Responsividade para Celulares */
+@media (max-width: 768px) {
+  * { cursor: auto !important; }
+  #tank-reticle, #reticle-dot, .radar-sweep { display: none; }
+  .grid-galeria { grid-template-columns: 1fr; }
+  .header-container h1 { font-size: 2.2rem; }
+}
